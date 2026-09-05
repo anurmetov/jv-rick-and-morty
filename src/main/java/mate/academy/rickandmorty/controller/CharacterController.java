@@ -1,7 +1,8 @@
 package mate.academy.rickandmorty.controller;
 
 import lombok.RequiredArgsConstructor;
-import mate.academy.rickandmorty.service.CharacterClient;
+import mate.academy.rickandmorty.dto.internal.CharachterInternalDto;
+import mate.academy.rickandmorty.service.CharacterInternalService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CharacterController {
 
-    private final CharacterClient characterClient;
+    private final CharacterInternalService characterInternalService;
 
-    @GetMapping
-    public String getAllCharacters() {
-        return characterClient.getAllCharacters();
+    @GetMapping("/random")
+    public CharachterInternalDto getRandomCharacter() {
+        return characterInternalService.getInternalCharachter();
     }
 }
