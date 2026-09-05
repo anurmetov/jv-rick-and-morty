@@ -17,7 +17,8 @@ public class CharacterInternalService {
 
     public CharachterInternalDto getInternalCharachter() {
         CharachterDto charachterDto = characterClient.getRandomCharacter();
-        CharachterInternal save = charachterRepository.save(charachterMapper.toEntity(charachterDto));
+        CharachterInternal save = charachterRepository.save(charachterMapper
+                .toEntity(charachterDto));
         return charachterMapper.toCharachterInternalDto(save);
     }
 }

@@ -11,7 +11,6 @@ import java.util.Random;
 import lombok.AllArgsConstructor;
 import mate.academy.rickandmorty.dto.external.CharachterDto;
 import mate.academy.rickandmorty.mapper.CharachterMapper;
-import mate.academy.rickandmorty.repository.CharachterRepository;
 import org.springframework.stereotype.Service;
 
 @Service
