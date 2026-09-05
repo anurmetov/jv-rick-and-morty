@@ -101,7 +101,7 @@
 				<version>3.3.0</version>
 				<executions>
 					<execution>
-						<phase>compile</phase>
+						<phase>validate</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -112,6 +112,8 @@
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
+
+					<excludeGeneratedSources>true</excludeGeneratedSources>
 				</configuration>
 			</plugin>
 		</plugins>
