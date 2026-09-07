@@ -2,20 +2,18 @@ package mate.academy.rickandmorty.dto.external;
 
 import java.util.List;
 
-public record CharachterDto(
+public record CharacterDto(
         int id,
         String name,
         String status,
         String species,
         String type,
         String gender,
-        CharachterOrigin origin,
-        CharachterLocation location,
+        CharacterOrigin origin,
+        CharacterLocation location,
         String image,
         List<String> episode,
         String url,
         String created
 ) {
-
-
 }

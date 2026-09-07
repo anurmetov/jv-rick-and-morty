@@ -3,7 +3,7 @@ package mate.academy.rickandmorty.dto.external;
 import lombok.Data;
 
 @Data
-public class CharachterInfo {
+public class CharacterInfo {
     private int count;
     private int pages;
     private String next;

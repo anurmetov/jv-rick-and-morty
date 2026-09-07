@@ -10,7 +10,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "charachters")
-public class CharachterInternal {
+public class CharacterInternal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

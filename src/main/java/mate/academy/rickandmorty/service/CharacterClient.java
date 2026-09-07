@@ -8,24 +8,36 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Random;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import mate.academy.rickandmorty.dto.external.PageDto;
-import mate.academy.rickandmorty.dto.external.CharachterDto;
-import mate.academy.rickandmorty.mapper.CharachterMapper;
-import mate.academy.rickandmorty.repository.CharachterRepository;
+import mate.academy.rickandmorty.dto.external.CharacterDto;
+import mate.academy.rickandmorty.mapper.CharacterMapper;
+import mate.academy.rickandmorty.repository.CharacterRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
-public class CharacterClient {
+@RequiredArgsConstructor
+public class CharacterClient implements CommandLineRunner {
     private static final String BASE_URL = "https://rickandmortyapi.com/api/character";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().build();
-
-    private final CharachterMapper charachterMapper;
-    private final CharachterRepository charachterRepository;
+    private static final Random RANDOM = new Random();
 
 
-    public void loadAllCharachters() {
+    private final CharacterMapper characterMapper;
+    private final CharacterRepository characterRepository;
+
+    @Override
+    public void run(String... args) throws Exception {
+       loadAllCharactersToDB();
+    }
+
+    public CharacterDto getRandomCharacter() {
+        Long randomIdOfCharacter = RANDOM.nextLong(1, characterRepository.count() + 1);
+        return characterMapper.toDto(characterRepository.findById(randomIdOfCharacter).orElseThrow());
+    }
+
+    private void loadAllCharactersToDB() {
         try {
             HttpRequest httpRequest = HttpRequest.newBuilder()
                     .GET()
@@ -35,11 +47,13 @@ public class CharacterClient {
             HttpResponse<String> response = HTTP_CLIENT.send(httpRequest,
                     HttpResponse.BodyHandlers.ofString());
             ObjectMapper objectMapper = new ObjectMapper();
-            PageDto charachterDto =
+            PageDto pageDto =
                     objectMapper.readValue(response.body(), PageDto.class);
-            int numberOfPages = charachterDto.info().getPages();
+            int numberOfPages = pageDto.info().getPages();
+
+            System.out.println("Loading Data with 1s delay pro page (about 20s) to load all the data to DB:...");
             for (int i = 1; i <= numberOfPages; i++) {
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 HttpRequest pageRequest = HttpRequest.newBuilder()
                         .GET()
                         .uri(new URI(BASE_URL+ "/?page=" + i))
@@ -49,11 +63,14 @@ public class CharacterClient {
                         HttpResponse.BodyHandlers.ofString());
                 PageDto page = objectMapper.readValue(pageResponse.body(), PageDto.class);
                 page.results().stream().
-                        map(charachterMapper::toEntity)
-                        .forEach(charachterRepository::save);
-                System.out.println(pageResponse.statusCode());
+                        map(characterMapper::toEntity)
+                        .forEach(characterRepository::save);
+                System.out.println("Data from 'Rick and Morty' API at Page " + i
+                        + " has been successfully loaded to DB.");
 
             }
+            System.out.println("Data was completely loaded to DB. Element in DB: "
+                    + pageDto.info().getCount());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
@@ -61,26 +78,5 @@ public class CharacterClient {
             throw new RuntimeException(e);
         }
     }
-    public CharachterDto getRandomCharacter() {
-        try {
-            Random rand = new Random();
-            int randomId = rand.nextInt(0, 826);
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .GET()
-                    .uri(new URI(BASE_URL + "/" + randomId))
-                    .build();
 
-            HttpResponse<String> response = HTTP_CLIENT.send(httpRequest,
-                    HttpResponse.BodyHandlers.ofString());
-            ObjectMapper objectMapper = new ObjectMapper();
-            CharachterDto charachterDto =
-                    objectMapper.readValue(response.body(), CharachterDto.class);
-            return charachterDto;
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            throw new RuntimeException(e);
-        }
-    }
 }
