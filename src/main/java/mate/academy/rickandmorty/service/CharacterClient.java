@@ -9,8 +9,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Random;
 import lombok.AllArgsConstructor;
+import mate.academy.rickandmorty.dto.external.PageDto;
 import mate.academy.rickandmorty.dto.external.CharachterDto;
 import mate.academy.rickandmorty.mapper.CharachterMapper;
+import mate.academy.rickandmorty.repository.CharachterRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +22,45 @@ public class CharacterClient {
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().build();
 
     private final CharachterMapper charachterMapper;
+    private final CharachterRepository charachterRepository;
 
+
+    public void loadAllCharachters() {
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(new URI(BASE_URL))
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofString());
+            ObjectMapper objectMapper = new ObjectMapper();
+            PageDto charachterDto =
+                    objectMapper.readValue(response.body(), PageDto.class);
+            int numberOfPages = charachterDto.info().getPages();
+            for (int i = 1; i <= numberOfPages; i++) {
+                Thread.sleep(1000);
+                HttpRequest pageRequest = HttpRequest.newBuilder()
+                        .GET()
+                        .uri(new URI(BASE_URL+ "/?page=" + i))
+                        .build();
+
+                HttpResponse<String> pageResponse = HTTP_CLIENT.send(pageRequest,
+                        HttpResponse.BodyHandlers.ofString());
+                PageDto page = objectMapper.readValue(pageResponse.body(), PageDto.class);
+                page.results().stream().
+                        map(charachterMapper::toEntity)
+                        .forEach(charachterRepository::save);
+                System.out.println(pageResponse.statusCode());
+
+            }
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new RuntimeException(e);
+        }
+    }
     public CharachterDto getRandomCharacter() {
         try {
             Random rand = new Random();

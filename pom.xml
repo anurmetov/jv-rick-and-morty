@@ -112,8 +112,7 @@
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<linkXRef>false</linkXRef>
-
-					<excludeGeneratedSources>true</excludeGeneratedSources>
+					<sourceDirectories>src/main/java</sourceDirectories>
 				</configuration>
 			</plugin>
 		</plugins>
