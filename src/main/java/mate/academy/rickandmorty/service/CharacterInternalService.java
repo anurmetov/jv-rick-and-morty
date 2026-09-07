@@ -3,7 +3,6 @@ package mate.academy.rickandmorty.service;
 import java.util.List;
 import java.util.Random;
 import lombok.AllArgsConstructor;
-import mate.academy.rickandmorty.dto.external.CharacterDto;
 import mate.academy.rickandmorty.dto.internal.CharacterInternalDto;
 import mate.academy.rickandmorty.mapper.CharacterMapper;
 import mate.academy.rickandmorty.model.CharacterInternal;
@@ -21,9 +20,8 @@ public class CharacterInternalService {
 
     public CharacterInternalDto getInternalCharacter() {
         Long randomIdOfCharacter = RANDOM.nextLong(1, characterRepository.count() + 1);
-        CharacterDto characterDto = characterMapper.toDto(characterRepository
+        return characterMapper.toCharacterInternalDto(characterRepository
                 .findById(randomIdOfCharacter).orElseThrow());
-        return characterMapper.toCharacterInternalDto(characterDto);
     }
 
     public List<CharacterInternalDto> findAllByName(String name) {
