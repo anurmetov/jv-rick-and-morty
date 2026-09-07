@@ -7,9 +7,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import mate.academy.rickandmorty.dto.external.CharacterDto;
 import mate.academy.rickandmorty.dto.external.PageDto;
 import mate.academy.rickandmorty.mapper.CharacterMapper;
 import mate.academy.rickandmorty.repository.CharacterRepository;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 public class CharacterClient implements CommandLineRunner {
     private static final String BASE_URL = "https://rickandmortyapi.com/api/character";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().build();
-    private static final Random RANDOM = new Random();
 
     private final CharacterMapper characterMapper;
     private final CharacterRepository characterRepository;
@@ -29,12 +26,6 @@ public class CharacterClient implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         loadAllCharactersToDB();
-    }
-
-    public CharacterDto getRandomCharacter() {
-        Long randomIdOfCharacter = RANDOM.nextLong(1, characterRepository.count() + 1);
-        return characterMapper.toDto(characterRepository
-                .findById(randomIdOfCharacter).orElseThrow());
     }
 
     private void loadAllCharactersToDB() {

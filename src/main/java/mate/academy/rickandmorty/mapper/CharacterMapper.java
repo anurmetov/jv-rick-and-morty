@@ -17,6 +17,9 @@ public interface CharacterMapper {
     CharacterDto toDto(CharacterInternal characterInternal);
 
     @Mapping(source = "id", target = "externalId")
+    CharacterInternalDto toCharacterInternalDto(CharacterInternal characterInternal);
+
+    @Mapping(source = "id", target = "externalId")
     CharacterInternalDto toCharacterInternalDto(CharacterDto characterDto);
 
 }
